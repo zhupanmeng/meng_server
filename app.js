@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var usersRouter = require('./routes/users');
-
+const crossOrigin = require('./midware/crossOrigin')
 
 var app = express();
 // view engine setup
@@ -16,6 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(crossOrigin) // 解决跨域
 
 app.use('/users', usersRouter);
 

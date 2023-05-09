@@ -5,6 +5,7 @@ const { SECRET } = require('../model/config/config')
 const checkTokenMidware = require('../midware/checkTokenMidware')
 var jwt = require('jsonwebtoken');
 var md5 = require('md5');
+const { send } = require('../Util/utils')
 
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
@@ -16,48 +17,23 @@ router.post('/login', (req, res) => {
       }, SECRET, {
         expiresIn: 60 * 60
       })
-      res.json({
-        code: '0000',
-        msg: '登录成功',
-        data: {
-          token
-        }
-      })
+      send(res, '0000', '登录成功',{token})
       return;
     }
-    res.json({
-      code: '0001',
-      msg: '用户名或密码错误',
-    })
+    send(res, '0001', '用户名或密码错误')
   }, err => {
-    res.json({
-      code: '0002',
-      msg: '出错了',
-    })
+    send(res, '0002', '出错了')
   })
 })
 
 router.post('/register', (req, res) => {
   const { username, password } = req.body
   UserModel.create({ username, password: md5(password) }).then((data) => {
-    res.json({
-      code: '0000',
-      msg: '注册成功',
-      data
-    })
-  }, err => {
-    res.json({
-      code: '0001',
-      msg: '注册失败',
-    })
-  })
+    send(res, '0000', '注册成功',{ data })
+  }, err => send(res, '0001', '该用户已存在，注册失败'))
 })
 router.get('/test', checkTokenMidware, (req, res) => {
-  res.json({
-    code: '0000',
-    msg: 'token正确',
-    data: req.user
-  })
+  send(res, '0000', 'token正确', req.user )
 })
 
 module.exports = router;
